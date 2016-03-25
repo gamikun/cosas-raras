@@ -15,10 +15,10 @@ from PIL import ImageFont
 
 path = '/Users/gama/Pictures/Fototeca.photoslibrary/Thumbnails'
 
-width = 1920
-height = 1080
-perrow = 205
-limit = 100000
+width = 3840
+height = 2160
+perrow = 219
+limit = 50000
 
 canvas = Image.new('RGB', (width, height))
 
@@ -38,8 +38,7 @@ if not os.path.isfile('./db.data'):
         for root, dirs, files in os.walk(path):
             for file in files:
                 fname = os.path.join(root, file)
-                if file.endswith('.jpg') and not file.endswith('_1024.jpg')\
-                and not file.startswith('thumb_'):
+                if file.endswith('.jpg') and not file.endswith('_1024.jpg'):
                     fp.write(fname + '\n')
 
 
@@ -56,8 +55,10 @@ for fname in dbfile:
         data = image.getdata()
 
         average = [0, 0, 0]
-        first = True
         maxvalue = 0
+        avg_r = []
+        avg_g = []
+        avg_b = []
         color_indexer = {}
         for color in data:
             r, g, b = color
@@ -65,19 +66,18 @@ for fname in dbfile:
                 color_indexer[color] = 1
             else:
                 color_indexer[color] += 1
-            if first:
-                average[0] = r
-                average[1] = g
-                average[2] = g
-                first = False
-            else:
-                average[0] = (average[0] + r) / 2
-                average[1] = (average[1] + g) / 2
-                average[2] = (average[2] + b) / 2
 
-        avgsum = reduce(lambda x, y: x + y, average)
-        averages[counter] = avgsum / len(average)
+            avg_r.append(r)
+            avg_g.append(g)
+            avg_b.append(b)
+
+        avgsum = (sum(avg_r) / len(avg_r) \
+                + sum(avg_g) / len(avg_g) \
+                + sum(avg_b) / len(avg_b)
+                ) / 3
+        averages[counter] = avgsum
         colorines[counter] = max(color_indexer)
+
         images.append(image)
 
     if counter == limit:
