@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mapa de Cuadros</title>
+</head>
+<body style="margin: 0">
+	<canvas id="lienzo" width="300" height="300"></canvas>
+	<script>
+		var canvas, context;
+		var vertical = 10, horizontal = 10;
+		var gw = 300 / horizontal;
+		var gh = 300 / vertical;
+		var posicion = {x: 0, y: 0};
+		window.onload = function() {
+			canvas = document.getElementById('lienzo');
+			context = canvas.getContext('2d');
+
+			canvas.onmousemove = function(event) {
+				posicion.x = Math.floor(event.clientX / gw);
+				posicion.y = Math.floor(event.clientY / gh);
+				fillBackground();
+				drawSquare(posicion.x, posicion.y, "blue");
+			}
+
+			canvas.onmouseup = function(event) {
+				drawSquare(posicion.x, posicion.y, "red");
+			}
+
+			fillBackground();
+		}
+
+		function drawSquare(x, y, color) {
+			context.fillStyle = color;
+			var rx = x * gw;
+			var ry = y * gh;
+			context.fillRect(rx, ry, gw, gh);
+		}
+
+		function fillBackground() {
+			context.fillStyle = '#000';
+			context.fillRect(0, 0, 300, 300);
+		}
+	</script>
+</body>
