@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Espacio</title>
+</head>
+<body style="margin: 0">
+    <canvas id="lienzo" style="position: fixed; background: #001"></canvas>
+    <script>
+        var cv, cx;
+        var smallStarsCount = 100
+        var yellowStarsCount = 20
+        var tick = 25;
+        var wind = -3;
+        var maxSpeed = 30;
+        var speedFactor = 1.0;
+        var windInterval = 3000;
+        var windTicked = 0;
+        var cursorX = 0
+        var cursorY = 0
+        var pushed = false
+
+        var SMALL_STAR = 0
+        var YELLOW_STAR = 1
+        var RED_STAR = 2
+        var BLUE_STAR = 3
+        var BIG_BLUE_STAR = 4
+        var BIG_RANDOM_PLANET = 5
+
+        var Astro = function(type) {
+            this.x = 0
+            this.y = 0
+            this.type = type
+
+            if(type === SMALL_STAR) {
+                this.diameter = 1
+                this.color = '#fff'
+            } else if(type === YELLOW_STAR) {
+                this.diameter = 2
+                this.color = '#ff0'
+            } else if(type === RED_STAR) {
+                this.diameter = 3
+                this.color = '#a00'
+            } else if(type === BLUE_STAR) {
+                this.diameter = 2
+                this.color = '#00d'
+            } else if(type == BIG_BLUE_STAR) {
+                this.diameter = 60
+                this.color = '#09d'
+            }
+            this.firstTime = true
+            this.reset = function() {
+                this.x = Math.random() * window.innerWidth
+                this.depth = 1.0
+                if(this.type === SMALL_STAR) {
+                    this.speedY = Math.random() * 0.5
+                } else if(this.type === RED_STAR) {
+                    this.speedY = Math.random() * 0.9
+                    this.depth = Math.random()
+                } else if(this.type === BLUE_STAR) {
+                    this.speedY = Math.random()
+                    this.depth = Math.random()
+                } else if(this.type === BIG_BLUE_STAR) {
+                    this.speedY = Math.random() * 0.5
+                    this.depth = 0.5
+                } else {
+                    
+                    this.speedY = Math.random()
+                }
+                this.speedX = this.backSpeedX = 0
+                this.long = Math.random() * 30
+
+                if(this.firstTime === true) {
+                    this.y = window.innerHeight * Math.random()
+                    this.firstTime = false
+                } else {
+                    this.y = 0
+                }
+                
+                this.desviated = false
+            }
+            this.reset()
+        }
+        var cuadros = []
+
+        function clean() {
+            //cx.fillStyle = '#001';
+            cx.clearRect(0, 0, cv.width, cv.height)
+        }
+
+        function time() {
+            clean();
+
+            for(var i = 0; i < cuadros.length; i++) {
+                cuadros[i].y += cuadros[i].speedY * speedFactor
+                cuadros[i].x += cuadros[i].speedX
+                if(cuadros[i].y > window.innerHeight) {
+                    cuadros[i].reset()
+                }
+            }
+
+            for(var i = 0; i < cuadros.length; i++) {
+                var c = cuadros[i];
+
+                cx.globalAlpha = 1.0
+                
+                //cx.globalAlpha = c.depth
+
+                if(c.type === RED_STAR || c.type === BLUE_STAR
+                || c.type === BIG_BLUE_STAR) {
+
+
+
+                    cx.fillStyle = c.color
+                    if(c.type === BIG_BLUE_STAR) {
+                        cx.fillStyle = c.color
+
+                        for(var j = 0; j < 5; j++) {
+                            //cx.globalAlpha = 0.5
+                            //cx.beginPath()
+                            //cx.arc(c.x, c.y, (2*c.diameter) - j*1.5, 0, 2 * Math.PI, false)
+                            //cx.fill()
+                        }
+
+
+                    }
+
+                    cx.globalAlpha = 1.0
+                    
+                    var gradient = cx.createRadialGradient(c.x, c.y,
+                        c.diameter, c.x - 85, c.y - 85, c.diameter*2.2)
+                    gradient.addColorStop(0, "#fff")
+                    gradient.addColorStop(1, "#111")
+                    cx.fillStyle = gradient
+
+                    cx.beginPath()
+                    cx.arc(c.x, c.y, c.diameter, 0, 2 * Math.PI, false)
+                    cx.fill()
+                } else {
+                    cx.fillStyle = c.color
+                    cx.fillRect(c.x, c.y, c.diameter, c.diameter)
+                }
+            }
+
+            //windTicked += tick
+            if(windTicked > windInterval) {
+                wind = Math.random() * 10 - 5
+                windTicked = 0
+                windInteral = (5 * Math.random() + 5) * 1000
+            }
+
+            setTimeout(time, tick)
+        }
+
+        window.onmousemove = function(event) {
+            cursorX = event.clientX
+            cursorY = event.clientY
+            wind = (event.clientX - window.innerWidth / 2) / 40
+        }
+
+        window.onmousedown = function() {
+            pushed = true
+        }
+
+        window.onmouseup = function() {
+            pushed = false
+        }
+
+        window.ontouchstart = function(event) {
+            pushed = true
+            cursorX = event.touches[0].pageX
+            cursorY = event.touches[0].pageY
+        }
+
+        window.ontouchend = function(event) {
+            pushed = false
+        }
+
+        if(window.DeviceMotionEvent!=undefined) {
+            window.ondevicemotion = function(event) {
+                wind = event.accelerationIncludingGravity.x
+                speedFactor = Math.abs(event.accelerationIncludingGravity.y) / 2;
+            }
+        }
+
+        window.onload = function() {
+            for(var i = 0; i < 5; i++) {
+                cuadros.push(new Astro(BLUE_STAR))
+            }
+            for(var i = 0; i < 5; i++) {
+                cuadros.push(new Astro(RED_STAR))
+            }
+            for(var i = 0; i < smallStarsCount; i++) {
+                cuadros.push(new Astro(SMALL_STAR))
+            }
+            for(var i = 0; i < yellowStarsCount; i++) {
+                cuadros.push(new Astro(YELLOW_STAR))
+            }
+            for(var i = 0; i < 1; i++) {
+                cuadros.push(new Astro(BIG_BLUE_STAR))
+            }
+
+            cv = document.getElementById('lienzo')
+            cx = cv.getContext('2d');
+            window.onresize = function() {
+                cv.width = window.innerWidth;
+                cv.height = window.innerHeight;
+                clean();
+            }
+            window.onresize();
+
+            time();
+        }
+    </script>
+</body>
+</html>
