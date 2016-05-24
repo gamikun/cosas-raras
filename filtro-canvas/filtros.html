@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Filtros en CANVAS</title>
+</head>
+<body>
+  <canvas width="500" height="353" id="lienzo"></canvas>
+  <button id="boton-filtro">Aplicar filtro</button>
+  <script>
+    var cv, cx, imagen, imageData;
+    function aplicarFiltro() {
+      var pixels = cx.getImageData(0,0,100,100);
+      for(var i = 0; i < 500*353; i++) {
+        pixels[i] = 0;
+      }
+      cx.putImageData(pixels, 0, 0);
+    }
+    window.onload = function() {
+      cv = document.getElementById('lienzo');
+      cx = cv.getContext('2d');
+      imagen = new Image();
+      imagen.src = 'imagen.jpg';
+      document.getElementById('boton-filtro').onclick = aplicarFiltro;
+      cx.drawImage(imagen,0,0);
+    };
+  </script>
+</body>
+</html>
