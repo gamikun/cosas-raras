@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mi fondo se mueve!</title>
+  <script type="text/javascript">
+    window.onload = function() {
+      document.onmousemove = function(e) {
+        var x = -(e.clientX/10);
+        var y = -(e.clientY/10);
+        this.body.style.backgroundPosition = x + 'px ' + y + 'px';
+      };
+    };
+  </script>
+  <style type="text/css">
+    body {
+      background: url('imagen.jpg');
+    }
+    #info {
+      width: 400px;
+      text-align: center;
+      background: #fff;
+      margin: 150px auto 0 auto;
+      padding: 30px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<div id="info">
+  ¡El fondo se mueve!
+</div>
+</body>
+</html>
