@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Círculos Azules</title>
+</head>
+<body style="margin: 0">
+    <canvas id="lienzo" style="position: fixed; background: #001"></canvas>
+    <script>
+        var cv, cx;
+        var particleCount = 300
+        var tick = 25;
+        var wind = -3;
+        var maxSpeed = 30;
+        var speedFactor = 1.0;
+        var windInterval = 3000;
+        var windTicked = 0;
+        var thunderInterval = 4000;
+        var thunderLast = 50;
+        var thunderVisible = true;
+        var thunderTimed = 0;
+        var thunderTicked = 0;
+        var cursorX = 0
+        var cursorY = 0
+        var pushed = false
+
+
+        var Cuadro = function() {
+            this.x = 0
+            this.y = 0
+            this.reset = function() {
+                this.x = Math.random() * window.innerWidth
+                this.speedY = Math.random() * maxSpeed + maxSpeed / 2
+                this.speedX = this.backSpeedX = 0
+                this.depth = Math.random()
+                this.long = Math.random() * 30
+                this.y = -(Math.random() * 100) - this.long;
+                this.y = 0
+                this.desviated = false
+            }
+            this.reset()
+        }
+        var cuadros = []
+
+        function clean() {
+            //cx.fillStyle = '#001';
+            cx.clearRect(0, 0, cv.width, cv.height)
+        }
+
+        function time() {
+            if(thunderVisible === true) {
+                cx.fillStyle = '#fff';
+                cx.fillRect(0, 0, cv.width, cv.height);
+            } else {
+                clean();
+            }
+            
+
+            for(var i = 0; i < cuadros.length; i++) {
+                if(pushed === true) {
+                    if((cuadros[i].x >= cursorX - 50) && (cuadros[i].x <= cursorX + 50)
+                    && (cuadros[i].y >= cursorY) && (cuadros[i].y <= cursorY + 30)) {
+                        cuadros[i].backSpeedX = cuadros[i].speedX
+                        if(cuadros[i].x >= cursorX) {
+                            cuadros[i].speedX += 5
+                        } else {
+                            cuadros[i].speedX -= 5
+                        }
+                    }
+                }
+                cuadros[i].y += cuadros[i].speedY * speedFactor
+                cuadros[i].x += wind + cuadros[i].speedX
+                if(cuadros[i].y > window.innerHeight) {
+                    cuadros[i].reset()
+                }
+            }
+            cx.lineWidth = 2
+            cx.strokeStyle = '#05f'
+            for(var i = 0; i < cuadros.length; i++) {
+                var c = cuadros[i];
+                cx.globalAlpha = c.depth;
+                cx.beginPath()
+                cx.moveTo(c.x, c.y)
+                cx.lineTo(c.x - c.speedX - wind, c.y - c.speedY)
+                cx.closePath()
+                cx.stroke()
+            }
+
+            //windTicked += tick
+            if(windTicked > windInterval) {
+                wind = Math.random() * 10 - 5
+                windTicked = 0
+                windInteral = (5 * Math.random() + 5) * 1000
+            }
+
+            if(thunderVisible === false) {
+                thunderTicked += tick
+                if(thunderTicked > thunderInterval) {
+                    thunderVisible = true
+                    thunderTicked = 0
+                    thunderInterval = 5 * Math.random()* 1000
+                }
+            } else {
+                thunderTimed += tick
+                if(thunderTimed > thunderLast) {
+                    thunderTimed = 0
+                    thunderVisible = false
+                }
+            }
+
+            setTimeout(time, tick)
+        }
+
+        window.onmousemove = function(event) {
+            cursorX = event.clientX
+            cursorY = event.clientY
+            wind = (event.clientX - window.innerWidth / 2) / 40
+        }
+
+        window.onmousedown = function() {
+            pushed = true
+        }
+
+        window.onmouseup = function() {
+            pushed = false
+        }
+
+        window.ontouchstart = function(event) {
+            pushed = true
+            cursorX = event.touches[0].pageX
+            cursorY = event.touches[0].pageY
+        }
+
+        window.ontouchend = function(event) {
+            pushed = false
+        }
+
+        if(window.DeviceMotionEvent!=undefined) {
+            window.ondevicemotion = function(event) {
+                wind = event.accelerationIncludingGravity.x
+                speedFactor = Math.abs(event.accelerationIncludingGravity.y) / 2;
+            }
+        }
+
+        window.onload = function() {
+            for(var i = 0; i < particleCount; i++) {
+                cuadros.push(new Cuadro())
+            }
+
+            cv = document.getElementById('lienzo')
+            cx = cv.getContext('2d');
+            window.onresize = function() {
+                cv.width = window.innerWidth;
+                cv.height = window.innerHeight;
+                clean();
+            }
+            window.onresize();
+
+            time();
+        }
+    </script>
+</body>
+</html>
