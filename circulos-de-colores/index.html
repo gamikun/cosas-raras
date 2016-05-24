@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+	body {
+		margin: 0;
+	}
+	canvas {
+		position: absolute;
+	}
+</style>
+</head>
+<body>
+	<canvas id="lienzo" style="background: black"></canvas>
+	<script>
+		var cv, cx
+		var stars = []
+		var center = {x: 0, y: 0}
+		var boardSize = {w: 0, h: 0}
+		var maxRadio = 600
+		var nLines = 150
+
+		function refresh() {
+			cx.clearRect(0, 0, boardSize.w, boardSize.w)
+			for (var i = 0; i < stars.length; i++) {
+				var star = stars[i]
+				cx.beginPath()
+				cx.strokeStyle = star.color
+				cx.lineWidth = 1.5
+				cx.arc(center.x, center.y, star.radio, star.start, star.end)
+				cx.stroke()
+			}
+		}
+
+		function reset(star) {
+			star.start = Math.random() * Math.PI * 2
+			star.end = Math.random() * Math.PI * 2
+			star.radio = Math.random() * maxRadio
+			star.speed = (Math.random() * Math.PI / 50)
+			star.direction = (Math.round(Math.random() * 1)) == 1 ? 1 : -1
+			//star.color = Math.round(Math.random() * 255)
+			var r = Math.round(Math.random() * 256)
+			var g = Math.round(Math.random() * 256)
+			var b = Math.round(Math.random() * 256)
+			star.color = 'rgb('+r+','+g+','+b+')'
+		}
+
+		window.onload = function() {
+			for (var i = 0; i < nLines; i++) {
+				star = {}
+				reset(star)
+				stars.push(star)
+			}
+			cv = document.getElementById('lienzo')
+			cv.width = window.innerWidth
+			cv.height = window.innerHeight
+			boardSize.w = cv.width
+			boardSize.h = cv.height
+			center.x = cv.width / 2
+			center.y = cv.height / 2
+			maxRadio = cv.width / 2
+			cx = cv.getContext('2d')
+
+			var handleScroll = function(evt){
+				var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
+				if (delta) zoom(delta);
+				return evt.preventDefault() && false;
+			};
+
+			cv.addEventListener('DOMMouseScroll',handleScroll,false);
+			cv.addEventListener('mousewheel',handleScroll,false);
+			
+			timeit()
+		}
+
+		function timeit() {
+			for (var i = 0; i < stars.length; i++) {
+				stars[i].start += stars[i].speed * stars[i].direction
+				stars[i].end   += stars[i].speed * stars[i].direction
+
+				//if (stars[i])
+			}
+			refresh()
+			setTimeout(timeit, 25)
+		}
+	</script>
+</body>
+</html>
