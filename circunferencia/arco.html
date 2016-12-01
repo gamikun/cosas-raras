@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Arco</title>
+	<style type="text/css">
+		canvas { background: black; }
+	</style>
+</head>
+<body>
+
+<canvas id="lienzo" width="400" height="400"></canvas>
+
+<script type="text/javascript">
+	var n = 30;
+	var radio = 150;
+	var cx = 200;
+	var cy = 200;
+	var f = Math.PI / n * 2;
+	var cv, ctx;
+	var smallRadius = 20;
+
+	window.onload = function() {
+		cv = document.getElementById('lienzo');
+		ctx = cv.getContext('2d');
+
+		ctx.fillStyle = 'white';
+
+		for (var i = 0; i < n; i++) {
+			var x = radio * Math.cos(i * f) + cx;
+			var y = radio * Math.sin(i * f) + cy;
+
+			ctx.beginPath();
+			ctx.arc(x, y, smallRadius, 0, Math.PI * 2, 0);
+			ctx.fill();
+		}
+
+	};
+
+
+</script>
+
+</body>
+</html>
