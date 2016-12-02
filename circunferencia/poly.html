@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Poly</title>
+	<style type="text/css">
+		body { background: black; }
+		canvas { background: black; margin-left: 400px; margin-top: 160px;}
+	</style>
+</head>
+<body>
+
+<canvas id="lienzo" width="400" height="400"></canvas>
+
+<script>
+	var r = 150;
+	var n = 10;
+	var f = Math.PI / n * 2;
+	var cx = 200;
+	var cy = 200;
+	var cv, ctx;
+
+	window.onload = function() {
+		cv = document.getElementById('lienzo');
+		ctx = cv.getContext('2d');
+
+		ctx.beginPath();
+		ctx.strokeStyle = '#ffffff';
+
+		var fx, fy;
+
+		for (var i = 0; i < n; i++) {
+			var x = r * Math.cos(i * f) + cx;
+			var y = r * Math.sin(i * f) + cy;
+			
+			if (i > 0) {
+				ctx.lineTo(x, y);
+			} else {
+				fx = x;
+				fy = y;
+			}
+
+			ctx.moveTo(x, y);
+		}
+
+		ctx.lineTo(fx, fy);
+		ctx.lineWidth = 4;
+
+		ctx.stroke();
+	};
+</script>
+
+</body>
+</html>
