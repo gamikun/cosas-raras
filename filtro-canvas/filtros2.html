@@ -1,0 +1,78 @@
+<script type="text/javascript">
+var sup, cv, img;
+
+window.onload = function() {
+  img = new Image();
+  // Especificamos la url de la imagen que vamos a cargar a imprimir,
+  // lo cual en este caso se encuentra dentro del mismo directorio de
+  // de la aplicaciÃ³n HTML5.
+  img.src = 'pajarini.jpg';
+  // Se toma la referencia del canvas, ojo, no del plano de dibujo, sino
+  // del objeto que forma parte del DOM de la aplicaciÃ³n.
+  sup = document.getElementById('lienzo');
+  // A partir del elemento del canvas, obtenemos la referencia al plano de dibujo,
+  // con el que podremos dibujar la imagen. El 2d es para decirle que nuestro plano
+  // serÃ¡ de 2 dimensiones (sÃ­, tambiÃ©n es posible en 3D).
+  cv  = sup.getContext('2d');
+  // drawImage es el mÃ©todo que imprime una imagen, la que cargamos anteriormente, los
+  // 2 parÃ¡metros es para especificar en quÃ© posiciÃ³n del canvas se mostrarÃ¡.
+  cv.drawImage(img,0,0);
+};
+
+function byn() {
+  // Como ya mencionaba, la informaciÃ³n la vamos a tomar
+  // directamente desde el canvas, asÃ­ que si queremos
+  // procesar la imagen original, vamos a imprimirla cada
+  // vez que se aplique el filtro, de otra manera se irÃ­an
+  // apilando los filtros, que serÃ­a correcto en algunos casos,
+  // pero en nuestro ejemplo no realmente.
+  cv.drawImage(img,0,0);
+ 
+  // dt nos va a devolver la la informaciÃ³n de un rango de pÃ­xeles,
+  // su tamaÃ±o y el arreglo de bytes, nÃ³tese el cv, que era el plano del canvas.
+  // * 0 es la posiciÃ³n de X
+  // * 0 es la posiciÃ³n en Y
+  // * 457 es el ancho de la imagen (la de mi ejemplo)
+  // * 343 es el alto de la misma
+  var dt = cv.getImageData(0,0,457,343);
+ 
+  // AquÃ­ tomamos los bytes del rango de pÃ­xeles o porciÃ³n de una imagen.
+  var px  = dt.data;
+ 
+  // Calculamos el nÃºmero de pÃ­xeles que contiene la imagen,
+  // multiplicando el ancho por el alto, esto nos sirve para poder
+  // hacer un recorrido por los pÃ­xeles, porque si recordamos,
+  // su estructura es sun solo "chorizo" (arreglo de una dimensiÃ³n).
+  var npix = dt.width * dt.height;
+  var col = 0;
+ 
+  // Simplemente hacemos el recorrido por todos los pÃ­xeles de la imagen.
+  // Esta parte es muy importante, las operaciones
+  // i*4, i*4+1, i*4+2, son necesarias para poder determinar la posiciÃ³n
+  // de un color del espectro de acuerdo al pÃ­xel actual de la iteraciÃ³n (for).
+  // Es decir que si 'px' tiene la lista de pÃ­xeles, serÃ­a
+  // px[i*4+1] para obtener la intensidad del color verde en ese pÃ­xel.
+  // px[i*4] para el rojo y px[i*4+2] para el azÃºl.
+  for(var i = 0; i < npix; i++) {
+    // Hay muchas maneras de convertir una imagen en blanco y negro,
+    // pero en esta ocaciÃ³n vamos a utilizar el mÃ©todo el promedio.
+    // Se promedian los 3 octetos (bytes) y se obtiene un valor que
+    // serÃ­a asignado a los mismos 3, de esta manera se convertirÃ­a en blanco y negro.
+    col = (px[i*4+1] + px[i*4+2] + px[i*4]) / 3;
+    px[i*4] = col;
+    px[i*4+1] = col;
+    px[i*4+2] = col;
+  }
+  // Ya que hemos modificado los pÃ­xeles, borramos el recuadro en la misma
+  // posiciÃ³n de la imagen y del mismo tamaÃ±o, para dejar el Ã¡rea libre
+  // para la imagen ya filtrada.
+  cv.clearRect(0,0,dt.width,dt.height);
+  // Finalmente devolvemos esos bytes al canvas con putImageData del canvas mismo.
+  cv.putImageData(dt,0,0);
+}
+</script>
+<canvas id="lienzo" width="640" height="480"></canvas>
+<div style="float: left; border: solid 1px #c0c0c0; width: 150px; margin: 0 10px 0 0;">
+  <strong>Blanco y Negro:</strong>
+  <div><input type="button" onclick="byn();" value="Promedio"></div>
+</div>
