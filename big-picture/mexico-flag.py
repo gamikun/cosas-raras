@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 # 
-# Encontrar fotos y juntarla en una sola.
+# Bandera de México con imágenes
 # Author: Gamaliel Espinoza Macedo
-# Date: March 24th, 2016
+# Date: 24-feb-2017
 # 
 from __future__ import division
 import os
