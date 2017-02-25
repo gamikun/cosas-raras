@@ -14,7 +14,8 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 
-path = '/Volumes/Secundario/Fototeca.photoslibrary/resources/proxies/derivatives'
+path = '/directorio/para/buscar/imagenes'
+save_to = '/donde/se/guardara/la/imagen.jpg'
 
 width = 1280
 cwidth = 1280 / 3
@@ -129,6 +130,6 @@ putgroup(white_images, offset=cwidth)
 putgroup(red_images,   offset=cwidth * 2)
 
 print("files found: {}".format(counter))
-canvas.save('/Users/gama/Desktop/verde.jpeg')
+canvas.save(save_to)
 
 print("listo :D")
