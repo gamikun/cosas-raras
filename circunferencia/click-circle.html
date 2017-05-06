@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Click on circles</title>
+
+	<style type="text/css">
+		body { background: black; margin: 0;}
+		canvas { background: black;  }
+	</style>
+</head>
+
+<body>
+	<canvas width="1280" height="720" id="lienzo"></canvas>
+	<script>
+		var radius = 250;
+		var cx = window.innerWidth / 2;
+		var cy = window.innerHeight / 2;
+		var circleColor = 'blue';
+		var circleSelectedColor = 'red';
+
+		var cv;
+		var ctx;
+
+		function drawCircle(color) {
+			ctx.beginPath();
+			ctx.arc(cx, cy, radius, 0, Math.PI * 2, 0);
+			ctx.fillStyle = color;
+			ctx.fill();
+		}
+
+		window.onload = function() {
+			cv = document.getElementById('lienzo');
+			ctx = cv.getContext('2d');
+
+			cv.onmousemove = function(event) {
+				var x = event.clientX;
+				var y = event.clientY;
+
+				var dx = Math.abs(x - cx);
+				var dy = Math.abs(y - cy);
+
+				var distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+				if (distance <= radius) {
+					drawCircle(circleSelectedColor);
+				} else {
+					drawCircle(circleColor);
+				}
+			}
+
+			drawCircle(circleColor);
+		}
+	</script>
+</body>
+</html>
