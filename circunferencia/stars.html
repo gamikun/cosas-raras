@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Stars from circle</title>
+	<style type="text/css">
+		body { background: black; }
+		canvas {
+			position: fixed;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="lienzo"></canvas>
+</body>
+<script>
+	var ctx;
+	var cv;
+
+	var cx;
+	var cy;
+
+	var innerRadius = 100;
+	var outerRadius = 200;
+	var numberOfPoints = 10;
+	var f;
+
+	function drawStar() {
+		var alt = false;
+		var r;
+		var delta;
+		var x, y;
+
+		ctx.lineWidth = 4;
+		ctx.strokeStyle = '#ffffff';
+		ctx.fillStyle = '#ffffff';
+
+		ctx.beginPath();
+
+		for (var i = 0; i < numberOfPoints; i++) {
+			if (alt === true) {
+				r = innerRadius;
+				alt = false;
+			} else {
+				r = outerRadius;
+				alt = true;
+			}
+			delta = i * f;
+			x = r * Math.cos(delta) + cx;
+			y = r * Math.sin(delta) + cy;
+
+			ctx.lineTo(x, y);
+		}
+
+		ctx.closePath();
+		ctx.fill();
+	}
+
+	window.onload = function() {
+		cv = document.getElementById('lienzo');
+		ctx = cv.getContext('2d');
+
+		cv.width = window.innerWidth;
+		cv.height = window.innerHeight;
+
+		f = (Math.PI * 2) / numberOfPoints;
+
+		cx = cv.offsetWidth / 2;
+		cy = cv.offsetHeight / 2;
+
+		drawStar();
+	}
+</script>
+</html>
