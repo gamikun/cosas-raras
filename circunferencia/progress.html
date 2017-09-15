@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+	<title>Progreso circular</title>
+	<style type="text/css">
+		body {
+			background: black;
+		}
+		canvas {
+			margin: 0 auto;
+			position: fixed;
+		}
+	</style>
+</head>
+<body>
+
+<canvas width="800" height="400" id="lienzo"></canvas>
+	
+<script>
+	var cv, ctx;
+	var cx, cy;
+	var progress = 0;
+	var progressLimit = 1.0;
+	var radius = 150;
+	var interval = 25;
+	var tint = '#00ff00';
+
+	function drawProgress(value) {
+		ctx.strokeStyle = tint;
+		ctx.lineWidth = 5;
+
+		ctx.clearRect(cx - radius - 5, cy - radius - 5, cx + radius + 5, cy + radius + 5);
+
+		// El borde del pastel
+		ctx.beginPath();
+		ctx.arc(cx, cy, radius, 0, Math.PI * 2, 1);
+		ctx.stroke();
+
+		// El relleno del pastel
+		ctx.fillStyle = tint;
+		ctx.beginPath();
+		ctx.moveTo(cx, cy);
+		ctx.arc(cx, cy, radius, 0, Math.PI * 2 * value, 0);
+		ctx.closePath();
+		ctx.fill();
+
+		// Dibujar porcentaje en medio
+		var percent = Math.round(value * 100);
+		var show = percent.toString() + '%';
+		ctx.fillStyle = '#ffffff';
+		ctx.font = '100px Arial';
+		var textSize = ctx.measureText(show);
+		ctx.fillText(show,
+			cx - textSize.width / 2,
+			cy + 25
+		);
+	}
+
+	function tick() {
+		progress += 0.01;
+		drawProgress(progress);
+
+		if (progress >= 1.0) {
+			return;
+		}
+
+		setTimeout(tick, interval);
+	}
+
+	window.onload = function() {
+		cv = document.getElementById('lienzo');
+		ctx = cv.getContext('2d');
+
+		cx = cv.offsetWidth / 2;
+		cy = cv.offsetHeight / 2;
+
+		window.onresize();
+
+		tick();
+	};
+
+	window.onresize = function() {
+		var cw = cv.offsetWidth;
+		var ch = cv.offsetHeight;
+
+		cv.style.left = (window.innerWidth / 2 - cw / 2) + 'px';
+		cv.style.top = (window.innerHeight / 2 - ch / 2) + 'px';
+	};
+</script>
+
+</body>
+</html>
