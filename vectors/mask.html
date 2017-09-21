@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+	<title>Masked Cat</title>
+	<style type="text/css">
+		body {
+			background: black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="lienzo" width="700" height="500"></canvas>
+
+	<script>
+		var cv;
+		var ctx;
+		var radius = 128;
+		var img = new Image();
+
+		img.onload = function() {
+			cv = document.getElementById('lienzo');
+			var cw = cv.offsetWidth;
+			var ch = cv.offsetHeight;
+			var cx = cw / 2;
+			var cy = ch / 2;
+
+			ctx = cv.getContext('2d');
+
+			ctx.beginPath();
+			ctx.arc(cx, cy, radius, 0, Math.PI * 2, 0);
+			ctx.arc(cx, cy + 120, radius / 3, 0, Math.PI * 2, 0);
+			ctx.arc(cx, cy - 120, radius / 3, 0, Math.PI * 2, 0);
+			ctx.arc(cx + 120, cy, radius / 3, 0, Math.PI * 2, 0);
+			ctx.arc(cx - 120, cy, radius / 3, 0, Math.PI * 2, 0);
+
+			for (var i = 0; i < 100; i++) {
+				var x = Math.random() * cw;
+				var y = Math.random() * ch;
+				var r = Math.random() * 35 + 5;
+				ctx.moveTo(x, y);
+				ctx.arc(x, y, r, 0, Math.PI * 2, 0);
+				ctx.closePath();
+			}
+
+			ctx.clip();
+
+			drawCat();
+		}
+
+		function drawCat() {
+			ctx.drawImage(img, 0, 0);
+		}
+
+		img.src = 'cat.jpg';
+	</script>
+</body>
+</html>
