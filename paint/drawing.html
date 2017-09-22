@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+	<title>Mi paint</title>
+	<style type="text/css">
+		body {background: black;}
+		canvas {
+			position: fixed;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+		#toolbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+		}
+	</style>
+</head>
+<body>
+<canvas height="500" id="lienzo"></canvas>
+<canvas height="500" id="overlienzo"></canvas>
+<div id="toolbar">
+	<button id="toolPencil">Pencil</button>
+	<button id="toolLine">Line</button>
+</div>
+<script>
+
+	var TOOL_PENCIL = 1;
+	var TOOL_LINE = 2;
+
+	var cv;
+	var ocv;
+	var ctx;
+	var octx;
+
+	var isMouseDown = false;
+	var tool = TOOL_PENCIL;
+
+	window.onload = function() {
+		cv = document.getElementById('lienzo');
+		ocv = document.getElementById('overlienzo');
+		window.onresize();
+	}
+
+	window.onresize = function() {
+		cv.width = window.innerWidth;
+		cv.height = window.innerHeight;
+		ocv.width = window.innerWidth;
+		ocv.height = window.innerHeight;
+		ctx = cv.getContext('2d');
+		octx = ocv.getContext('2d');
+
+		octx.clearStyle = 'black';
+		ctx.clearStyle = 'black';
+	}
+
+	window.onmousemove = function(event) {
+		if (tool === TOOL_PENCIL) {
+			if (isMouseDown) {
+				ctx.strokeStyle = 'white';
+				ctx.lineWidth = 1;
+				ctx.lineTo(event.clientX, event.clientY);
+				ctx.stroke();
+			}
+		}
+
+		else if (tool === TOOL_LINE) {
+			if (isMouseDown) {
+				octx.fillStyle = 'black';
+				octx.strokeStyle = 'green';
+				octx.lineWidth = 2;
+				//octx.clearRect(0, 0, 1000, 1000);
+				//octx.fill();
+				octx.lineTo(event.clientX, event.clientY);
+				octx.stroke();
+			}
+		}
+	}
+
+	window.onmousedown = function(event) {
+		isMouseDown = true;
+		ctx.moveTo(event.clientX, event.clientY);
+		octx.moveTo(event.clientX, event.clientY);
+	}
+
+	window.onmouseup = function(event) {
+		isMouseDown = false;
+		octx.clearRect(0, 0, 1000, 1000);
+	}
+
+	document.getElementById('toolPencil').onclick = function() {
+		tool = TOOL_PENCIL;
+	}
+
+	document.getElementById('toolLine').onclick = function() {
+		tool = TOOL_LINE;
+	}
+
+</script>
+
+</body>
+</html>
