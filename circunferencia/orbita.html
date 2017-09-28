@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+	<title>Órbita</title>
+	<style>
+		body {
+			background: black;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+<div style="width: 25px; height: 25px; position: fixed; background: #006699" id="undiv"></div>
+<script>
+	var f = Math.PI * 2 / 360;
+	var eldiv;
+	var cx = window.innerWidth / 2;
+	var cy = window.innerHeight / 2;
+	var angle = 0;
+
+	function orbitAt(e, cx, cy, r, d) {
+		var pos = d * f;
+		var x = r * Math.sin(pos) + cx - e.offsetWidth / 2;
+		var y = r * Math.cos(pos) + cy - e.offsetHeight / 2;
+		e.style.left = x.toString() + 'px';
+		e.style.top = y.toString() + 'px';
+	}
+
+	window.onload = function() {
+		eldiv = document.getElementById('undiv');
+		tick();
+	}
+
+	function tick() {
+		orbitAt(eldiv, cx, cy, 100, angle);
+
+		angle += 4;
+
+		if (angle >= 360) {
+			angle = 0;	
+		}
+
+		setTimeout(tick, 5);
+	}
+
+	window.onmousemove = function(event) {
+		cx = event.clientX;
+		cy = event.clientY;
+	}
+
+</script>
+
+</body>
+</html>
