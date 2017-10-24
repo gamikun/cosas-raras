@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	<canvas width="600" height="200" id="lienzo"></canvas>
+	<script>
+		var cnv, ctx, pos_x = 0, img;
+
+		function anim() {
+			ctx.clearRect(0, 0, 600, 200);
+			ctx.drawImage(img, pos_x, 0);
+			pos_x += 1;
+			setTimeout(anim, 25);
+		}
+
+		window.onload = function() {
+			img = new Image();
+			img.src = 'repomen.jpg';
+			cnv = document.getElementById('lienzo');
+			ctx = cnv.getContext('2d');
+			// iniciar la animación
+			anim();
+		}
+	</script>
+</body>
