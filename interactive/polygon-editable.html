@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+	<title>Polígon editable</title>
+	<style type="text/css">
+		body {
+			background: black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="lienzo" width="700" height="300"></canvas>
+	<script>
+		var cv = document.getElementById('lienzo');
+		var ctx = cv.getContext('2d');
+		var nodeIndex = null;
+		var nodeRadius = 10;
+
+		var polygon = [
+			[20, 20],
+			[150, 25],
+			[150, 289],
+			[50, 190]
+		];
+
+		function drawPolygon(poly) {
+			ctx.strokeStyle = '#ffffff';
+			ctx.fillStyle = '#00ff00';
+			ctx.lineWidth = 4;
+
+			ctx.beginPath();
+
+			var x, y;
+			for (var index in poly) {
+				x = poly[index][0];
+				y = poly[index][1];
+				ctx.lineTo(x, y);
+			}
+
+			ctx.closePath();
+			ctx.stroke();
+
+			for (var index in poly) {
+				x = poly[index][0];
+				y = poly[index][1];
+				ctx.beginPath();
+				ctx.arc(x, y, nodeRadius, 0, Math.PI * 2, 1);
+				ctx.fill();
+			}
+		}
+
+		cv.onmousedown = function(event) {
+			var dx, dy, x, y, d; 
+			for (var index in polygon) {
+				x = polygon[index][0];
+				y = polygon[index][1];
+				dx = Math.abs(event.clientX - cv.offsetLeft - x);
+				dy = Math.abs(event.clientY - cv.offsetTop - y);
+				d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+				if (d < nodeRadius) {
+					nodeIndex = index;
+					break;
+				}
+			}
+		}
+
+		cv.onmouseup = function(event) {
+			nodeIndex = null;
+		}
+
+		cv.onmousemove = function(event) {
+			if (nodeIndex != null) {
+				ctx.clearRect(0, 0, 700, 300);
+				polygon[nodeIndex][0] = event.clientX;
+				polygon[nodeIndex][1] = event.clientY;
+
+				drawPolygon(polygon);
+			}
+		}
+
+		drawPolygon(polygon);
+	</script>
+</body>
+</html>
