@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+    <title>Video progress</title>
+    <style type="text/css">
+        .black {
+            background: black;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="lienzo" width="600" height="40" class="black"></canvas>
+
+<script>
+    var scale = 3600; // minutes
+    var cv = document.getElementById('lienzo');
+    var ctx = cv.getContext('2d');
+    var segments = [
+        [0, 100],
+        [119, 1356],
+        [1422, 2000],
+        [2010, 2910],
+        [3100, 3200],
+        [3210, 3300],
+        [3450, 3600]
+    ]
+
+    function drawProgress() {
+        var unit = cv.width / scale;
+        for (var i in segments) {
+            var segment = segments[i];
+            var x = segment[0] * unit;
+            var w = (segment[1] - segment[0]) * unit;
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(x, 0, w, cv.height);
+        }
+    }
+
+    cv.onmouseup = function(event) {
+        var unit = cv.width / scale;
+        var mx = event.clientX - this.offsetLeft;
+        var x = mx / unit;
+        var matchedSegment = null;
+
+        for (var i = 0; i < segments.length; i++) {
+            var segment = segments[i];
+            if (x >= segment[0] && x < segment[1]) {
+                matchedSegment = segment;
+                break;
+            }
+        }
+
+        if (matchedSegment) {
+            console.log('segment ' + segment[0].toString() + ' to ' + segment[1].toString());
+        } else {
+            console.log('NO SEGMENT');
+        }
+    }
+
+    drawProgress();
+</script>
+
+</body>
+</html>
