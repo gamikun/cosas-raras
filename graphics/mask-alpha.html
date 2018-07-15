@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <title>Alpha Mask</title>
+    <style>
+        body { background: 'white'; }
+        canvas { margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas width="450" height="600" id="lienzo"></canvas>
+
+<script>
+var cv = document.getElementById('lienzo')
+var cx = cv.getContext('2d')
+
+var bkgData, maskData
+
+var mask = new Image()
+var bkg = new Image()
+bkg.onload = function() {
+    cx.drawImage(bkg, 0, 0)
+    bkgData = cx.getImageData(0, 0, cv.width, cv.height)
+    cx.clearRect(0, 0, cv.width, cv.height)
+    mask.src = 'korean.png'
+}
+bkg.src = 'background.jpg'
+
+mask.onload = function() {
+    cx.drawImage(mask, 0, 0)
+    maskData = cx.getImageData(0, 0, cv.width, cv.height)
+    cx.clearRect(0, 0, cv.width, cv.height)
+
+    var npixels = maskData.width * maskData.height
+
+    for (var index = 0; index < npixels; index++) {
+        bkgData.data[index * 4 + 3] = maskData.data[index * 4 + 3]
+    }
+
+    cx.putImageData(bkgData, 0, 0)
+}
+
+</script>
+
+</body>
+</html>
