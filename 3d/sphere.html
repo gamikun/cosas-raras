@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<body>
+<canvas id="canvas" width="500" height="500" style="background: black;"></canvas>
+<script>
+  var max = 20;
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  var cx = canvas.width / 2;
+  var cy = canvas.height / 2;
+  var step = (Math.PI * 2) / max;
+  var displacement = 0.01;
+  var radius = 100;
+  var particles = [];
+  var interval = 25;
+
+  var isDown = false;
+  var lastPosition = {x: 0, y: 0};
+
+  var minRadius = 1.8;
+  var maxRadius = 2.4;
+  var resRadius = maxRadius - minRadius;
+
+  var minAlpha = 0.6;
+  var maxAlpha = 1.0;
+  var resAlpha = maxAlpha - minAlpha;
+
+  var tilt = 0;
+
+  function randomColor() {
+    return 'rgb(' +
+      Math.random() * 255 + ',' +
+      Math.random() * 255 + ',' +
+      Math.random() * 255 +
+    ')';
+  }
+
+  for (var index = 0; index < max; index++) {
+    particles.push({
+      angle: index * step,
+      z: cy - 80,
+      radius: radius * 0.55,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy - 60,
+      radius: radius * 0.8,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy - 30,
+      radius: radius * 0.95,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy,
+      radius: radius,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy + 30,
+      radius: radius * 0.95,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy + 60,
+      radius: radius * 0.8,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy + 80,
+      radius: radius * 0.55,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy + 90,
+      radius: radius * 0.25,
+      color: randomColor()
+    });
+    particles.push({
+      angle: index * step,
+      z: cy - 90,
+      radius: radius * 0.25,
+      color: randomColor()
+    });
+  }
+
+  function tick() {
+    for (var index = 0; index < particles.length; index++) {
+      particles[index].angle += displacement;
+    }
+    globalDraw();
+    setTimeout(tick, interval);
+  }
+
+  function globalDraw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    for (var index = 0; index < particles.length; index++) {
+      var p = particles[index];
+      var x = cx + Math.sin(p.angle) * p.radius;
+      var z = cy + Math.cos(p.angle) * p.radius;
+      var dz = Math.abs((cy + radius) - z) / radius;
+      var y = (p.z + (p.z - cy) * dz * 0.15);
+      // var z = ((cy - y) - radius) * 0.1;
+      // console.log(dz);
+      context.fillStyle = "white";
+      context.strokeStyle = '#ffffff';
+      context.lineWidth = 2;
+      context.globalAlpha = dz * resAlpha + minAlpha;
+      context.beginPath();
+      context.arc(x, y, dz * resRadius + minRadius, 0, Math.PI * 2);
+      context.fill();
+      context.globalAlpha = 1.0;
+    }
+  }
+
+  window.onmousedown = function(e) {
+    lastPosition.x = e.clientX;
+    lastPosition.y = e.clientY;
+    isDown = true;
+  }
+
+  window.onmouseup = function() {
+    isDown = false;
+  }
+
+  window.onmousemove = function(e) {
+    if (isDown) {
+      var delta = lastPosition.x - e.clientX;
+      tilt += e.clientY - lastPosition.y;
+
+      lastPosition.x = e.clientX;
+      lastPosition.y = e.clientY;
+      for (var index = 0; index < particles.length; index++) {
+        particles[index].angle += delta / (radius * 2);
+      }
+      globalDraw();
+    }
+  }
+
+  tick();
+</script>
+</body>
+</html>
