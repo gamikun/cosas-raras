@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <title>Black & White</title>
+  <style type="text/css">
+    body {
+      background: black;
+    }
+  </style>
+</head>
+<html>
+
+<canvas width="705" height="705" id="lienzo"></canvas>
+<canvas width="705" height="705" id="a"></canvas>
+<canvas width="705" height="705" id="b"></canvas>
+
+<script>
+  var canvas = document.getElementById('lienzo');
+  var context = canvas.getContext('2d');
+
+  var canvas_a = document.getElementById('a');
+  var context_a = canvas_a.getContext('2d');
+
+  var canvas_b = document.getElementById('b');
+  var context_b = canvas_b.getContext('2d');
+
+  var image = new Image();
+
+  image.onload = function() {
+    context.drawImage(image, 0, 0);
+    metodoA();
+    metodoB();
+  }
+
+  image.src = 'sample.jpg';
+
+  function metodoA() {
+    var data = context.getImageData(0, 0, 705, 705);
+    for (var index = 0; index < data.data.length; index++) {
+      var rojo = data.data[index * 4];
+      var verde = data.data[index * 4 + 1];
+      var azul = data.data[index * 4 + 2];
+      var valor = (rojo + verde + azul) / 3;
+
+      data.data[index * 4] = valor;
+      data.data[index * 4 + 1] = valor;
+      data.data[index * 4 + 2] = valor;
+    }
+
+    context_a.putImageData(data, 0, 0);
+  }
+
+  function metodoB() {
+    var data = context.getImageData(0, 0, 705, 705);
+
+    for (var index = 0; index < data.data.length; index++) {
+      var rojo = data.data[index * 4];
+
+      data.data[index * 4] = rojo;
+      data.data[index * 4 + 1] = rojo;
+      data.data[index * 4 + 2] = rojo;
+    }
+
+    context_b.putImageData(data, 0, 0);
+  }
+
+</script>
+
+<div>
+
+</div>
+
+</html>
