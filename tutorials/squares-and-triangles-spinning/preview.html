@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+  <title>Rotating dots</title>
+</head>
+<style type="text/css">
+  body {
+    background: rgb(244, 242, 238);
+    margin: 0;
+  }
+  canvas {
+    border: solid 1px black;
+    margin: 0 auto;
+  }
+  .container {
+    margin: 0 auto 0 auto;
+    text-align: center;
+  }
+</style>
+<body>
+<div class="container">
+  <canvas width="418" height="418" id="lienzo"></canvas>
+</div>
+<script>
+  var TRIANGLES = 4;
+  var MAIN_RADIUS = 100;
+  var DOT_RADIUS = 4;
+  var TRI_RADIUS = 65;
+  var DOT_COLOR = 'black';
+  var STAR_SIDES = 7;
+
+  var DRAW_LINES = true;
+  var DRAW_TRIANGLES = true;
+
+  var canvas = document.getElementById('lienzo');
+  var context = canvas.getContext('2d');
+  var state = {
+    angles: {
+      main: 0,
+      triangles: 360,
+      star: 0
+    }
+  };
+
+  function drawDot(x, y, color) {
+    context.globalAlpha = 1.0;
+    context.beginPath();
+    context.arc(x, y, DOT_RADIUS, 0, Math.PI * 2, 0);
+    context.fillStyle = color ? color : DOT_COLOR;
+    context.closePath();
+    context.fill();
+  }
+
+  var cx = canvas.width / 2;
+  var cy = canvas.height / 2;
+
+  function drawStar() {
+    context.globalAlpha = 1.0;
+    context.strokeStyle = '#ff9900';
+    context.lineWidth = 2;
+
+    var started = true;
+    var radius = MAIN_RADIUS + TRI_RADIUS;
+    // var delta = (Math.PI * 2) / STAR_SIDES;
+    var delta = Math.floor(STAR_SIDES / 2) * Math.PI * 2 / STAR_SIDES;
+    var position = 0;
+
+    context.beginPath();
+    for (var index = 0; index < STAR_SIDES + 1; index++) {
+      var radians = position + ((Math.PI / 180) * state.angles.star);
+      var x = radius * Math.sin(radians) + cx;
+      var y = radius * Math.cos(radians) + cy;
+
+      if (!started) {
+        context.moveTo(x, y);
+        started = true;
+      } else {
+        context.lineTo(x, y);
+      }
+      context.font = '25px Arial';
+      // context.fillText(index.toString(), x, y);
+      position += delta;
+      // console.log('ANGLE');
+    }
+
+    // context.closePath();
+    context.stroke();
+  }
+
+  function tick() {
+    var deltaTri = (Math.PI * 2) / 3;
+    var deltaSq = (Math.PI * 2) / TRIANGLES;
+
+    state.angles.main += 1;
+    state.angles.triangles -= 1;
+    state.angles.star += 0.1428;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    drawStar();
+
+    for (var indexSq = 0; indexSq < 4; indexSq++) {
+      var radians = deltaSq * indexSq
+        + ((Math.PI / 180) * state.angles.main);
+      var tri_x = MAIN_RADIUS * Math.sin(radians) + cx;
+      var tri_y = MAIN_RADIUS * Math.cos(radians) + cy;
+
+      for (var indexTri = 0; indexTri < 3; indexTri ++) {
+        var triRadians = deltaTri * indexTri
+          + Math.PI / 180 * state.angles.triangles;
+        var xxx = TRI_RADIUS * Math.sin(triRadians) + tri_x;
+        var yyy = TRI_RADIUS * Math.cos(triRadians) + tri_y;
+        drawDot(xxx, yyy);
+      }
+
+      if (DRAW_TRIANGLES) {
+        context.strokeStyle = '#990000';
+        context.lineWidth = 2;
+        context.beginPath();
+        for (var indexTri = 0; indexTri < 3; indexTri ++) {
+          var triRadians = deltaTri * indexTri
+            + Math.PI / 180 * state.angles.triangles;
+          var xxx = TRI_RADIUS * Math.sin(triRadians) + tri_x;
+          var yyy = TRI_RADIUS * Math.cos(triRadians) + tri_y;
+          context.lineTo(xxx, yyy);
+        }
+        context.closePath();
+        context.stroke();
+      }
+    }
+
+    if (DRAW_LINES) {
+      for (var indexTri = 0; indexTri < 3; indexTri++) {
+
+        context.beginPath();
+        for (var indexSq = 0; indexSq < 4; indexSq++) {
+          var radians = deltaSq * indexSq
+            + ((Math.PI / 180) * state.angles.main);
+          var tri_x = MAIN_RADIUS * Math.sin(radians) + cx;
+          var tri_y = MAIN_RADIUS * Math.cos(radians) + cy;
+
+          var triRadians = deltaTri * indexTri
+            + Math.PI / 180 * state.angles.triangles;
+          var xxx = TRI_RADIUS * Math.sin(triRadians) + tri_x;
+          var yyy = TRI_RADIUS * Math.cos(triRadians) + tri_y;
+          // drawDot(xxx, yyy, 'blue');
+          context.lineTo(xxx, yyy);
+
+        }
+        context.globalAlpha = 0.3;
+        context.lineWidth = 2;
+        context.strokeStyle = 'blue';
+        context.closePath();
+        context.stroke();
+      }
+    }
+
+    // requestAnimationFrame(tick);
+    setTimeout(tick, 25);
+  }
+
+  tick();
+</script>
+
+</body>
+</html>
