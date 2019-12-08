@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <title>Green screen</title>
+</head>
+<body>
+
+<div style="margin: 0 auto; height: 720px; width: 720px;">
+  <image src="background.jpeg" style="position: absolute">
+  <canvas id="canvas" width="720" height="720" style="margin: 0 auto; position: absolute;"></canvas>
+</div>
+
+<script>
+  var threshold = 72; // de 255
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  var target = new Image();
+
+  target.onload = function() {
+    context.drawImage(target, 0, 0);
+
+    var targetData = context.getImageData(0, 0, 720, 720);
+    var pixelsCount = targetData.width * targetData.height;
+
+    for (var index = 0; index < pixelsCount; index++) {
+      var o = index * 4;
+      var r = targetData.data[o];
+      var g = targetData.data[o + 1];
+      var b = targetData.data[o + 2];
+      var a = targetData.data[o + 3];
+      var avg = (r + b) / 2;
+
+      if (g > avg + threshold) {
+        targetData.data[o + 3] = 0;
+      } else if (g > avg) {
+        targetData.data[o + 3] = 255 - (255 / threshold) * (g - avg);
+      }
+    }
+
+    context.putImageData(targetData, 0, 0)
+
+  };
+
+  target.src = 'target1.jpeg';
+
+</script>
+
+</body>
+</html>
