@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+  <title>Lineas</title>
+</head>
+<body>
+
+<canvas id="canvas" width="700" height="400"></canvas>
+
+<script>
+
+var SEGMENTS = 50;
+  
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+var state = {
+  n: 350,
+  delta: 10,
+  hairs: [],
+  dots: [],
+  radius: 200,
+  dotsCounter: 35,
+  dotRadius: 10,
+  lineWidth: 1,
+  isLGBT: false
+};
+var Hair = function() {
+  this.delta = Math.random() * 2 + 4;
+  this.root = {
+    x: canvas.width * Math.random(),
+    y: canvas.height
+  };
+  this.tip = {
+    x: Math.random() * 100 + this.root.x,
+    y: canvas.height * Math.random()
+  };
+  this.center = {
+    x: this.root.x,
+    y: (this.root.y - this.tip.y) * Math.random() + this.tip.y
+  };
+  this.thickness = Math.random() * 5;
+};
+
+function createCircumference(radius, cx, cy, segments) {
+  var vertices = [];
+  var v = Math.PI / segments * 2;
+  var d;
+
+  for (var index = 0; index < segments; index++) {
+    d = index * v;
+
+    vertices.push({
+      x: radius * Math.cos(d) + cx,
+      y: radius * Math.sin(d) + cy,
+      radius: radius
+    });
+  }
+
+  return vertices;
+}
+
+function draw() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  state.dots.forEach(function(dot, index) {
+    var subdot;
+
+    if (state.dotRadius > 0) {
+      context.beginPath();
+      context.arc(dot.x, dot.y, state.dotRadius, 0, Math.PI * 2, 0);
+      context.fill();  
+    }
+
+    context.lineWidth = state.lineWidth;
+    context.beginPath();
+    for (var subindex = 0; subindex < state.dots.length; subindex++) {
+      if (subindex > index) {
+        subdot = state.dots[subindex];
+        context.moveTo(dot.x, dot.y);
+        context.lineTo(subdot.x, subdot.y);
+      }
+    }
+    context.stroke();
+  });
+
+  setTimeout(draw, 1000);
+}
+
+window.onresize = function() {
+  canvas.width = window.innerWidth - 200;
+  canvas.height = window.innerHeight;
+
+  state.dots = createCircumference(
+    state.radius, canvas.width / 2, canvas.height / 2, state.dotsCounter
+  );
+};
+
+function changeRadius(value) {
+  state.radius = parseInt(value);
+  state.dots = createCircumference(
+    state.radius, canvas.width / 2, canvas.height / 2, state.dotsCounter
+  );
+  draw();
+}
+
+function changePoints(value) {
+  state.dotsCounter = parseInt(value);
+  state.dots = createCircumference(
+    state.radius, canvas.width / 2, canvas.height / 2, state.dotsCounter
+  );
+  draw();
+}
+
+function changeDotRadius(value) {
+  state.dotRadius = parseInt(value);
+  draw();
+}
+
+function changeLGBT(value) {
+  state.isLGBT = parseInt(value);
+  draw();
+}
+
+function changeLineWidth(value) {
+  state.lineWidth = parseInt(value);
+  draw();
+}
+
+window.onresize();
+
+draw();
+
+</script>
+
+<div style="position: fixed; background: #f0f0f0; top: 0; right: 0; bottom: 0; padding: 32px; width: 200px;">
+  <div>
+    Radius
+    <input type="range" oninput="changeRadius(this.value)" min="30" max="800">
+  </div>
+
+  <div>
+    Puntos
+    <input type="range" oninput="changePoints(this.value)" min="3" max="30">
+  </div>
+
+  <div>
+    Radio de puntos
+    <input type="range" oninput="changeDotRadius(this.value)" min="0" max="30">
+  </div>
+
+  <div>
+    Ancho de línea
+    <input type="range" oninput="changeLineWidth(this.value)" min="1" max="10">
+  </div>
+</div>
+
+</body>
+</html>
