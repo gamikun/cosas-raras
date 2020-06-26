@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+  <title>Rotate</title>
+  <style type="text/css">
+    body { background: #343c44 }
+    .container { width: 500px; height: 500px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <canvas width="500" height="500"></canvas>
+</div>
+
+<script>
+  var CANVAS_WIDTH = 500;
+  var CANVAS_HEIGHT = 500;
+  var CX = CANVAS_WIDTH / 2;
+  var CY = CANVAS_HEIGHT / 2;
+  var IMAGE_WIDTH = 350;
+  var IMAGE_HEIGHT = 350;
+  var R = IMAGE_WIDTH / 2;
+  var MAXRAD = Math.PI * 2;
+
+  var cnv = document.querySelector('canvas');
+  var ctx = cnv.getContext('2d');
+
+  ctx.lineWidth = 7;
+
+  var image = new Image();
+  var state = {
+    isDown: false,
+    lastAngle: 0,
+    angleStart: 0,
+    angle: 0
+  };
+
+  function drawArtifacts() {
+    const angle = -state.angle;
+    const [x, y] = xyFromAngle(angle);
+    const [x0, y0] = xyFromAngle(0);
+
+    drawArc('#FF8AD8', CX, CY, R / 2, 0, angle, 1);
+    // Angle 0º Line
+    drawLine('#9A9EA3', CX, CY, x0, y0);
+    // Angle 0º Dot
+    drawDot('#9A9EA3', x0, y0);
+
+
+    drawArc('#9A9EA3', CX, CY, R, 0, MAXRAD);
+
+    // Current angle line
+    drawLine('#FFF70D', CX, CY, x, y);
+    // Current angle dot
+    drawDot('#2AFF5A', x, y);
+
+    // Center dot
+    drawDot('#01B3FF', CX, CY);
+  }
+
+  function drawArc(color, x, y, r, starts, ends, dir) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, starts, ends, dir);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+  }
+
+  function drawLine(color, x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+  }
+
+  function drawDot(color, x, y) {
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(x, y, 15, 0, MAXRAD);
+    ctx.fill();
+  }
+
+  function angleFromEvent(e) {
+    const x = e.clientX - cnv.offsetLeft;
+    const y = e.clientY - cnv.offsetTop;
+
+    return Math.atan2(
+      (x - CX) / R,
+      (y - CY) / R
+    );
+  }
+
+  function xyFromAngle(angle) {
+    return [
+      R * Math.cos(angle) + CX,
+      R * Math.sin(angle) + CY
+    ];
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctx.translate(CX, CY);
+    ctx.rotate(-state.angle);
+    ctx.drawImage(image,
+      -IMAGE_WIDTH / 2,
+      -IMAGE_HEIGHT / 2,
+      IMAGE_WIDTH,
+      IMAGE_HEIGHT
+    );
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    if (state.isDown) {
+      drawArtifacts();
+    }
+  }
+
+  cnv.onmousedown = function(e) {
+    const angle = angleFromEvent(e);
+    state.angleStart = angle;
+    state.isDown = true;
+    cnv.onmousemove(e);
+  };
+
+  cnv.onmousemove = function(e) {
+    if (!state.isDown) {
+      return;
+    }
+
+    state.angle = angleFromEvent(e)
+      + state.lastAngle
+      - state.angleStart;
+
+    draw();
+  };
+
+  cnv.onmouseup = function(e) {
+    state.lastAngle = state.angle;
+    state.isDown = false;
+    draw();
+  }
+
+  image.onload = function() {
+    draw();
+  };
+
+  image.src = 'luigi.jpeg';
+</script>
+
+</body>
+</html>
