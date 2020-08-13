@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+  <title>Snake</title>
+  <style>
+    body {
+      background: #444;
+    }
+    canvas {
+      border: solid 8px white;
+    }
+  </style>
+</head>
+<body>
+
+<canvas width="500" height="500"></canvas>
+
+<script>
+  const STATE_RUNNING = 1;
+  const STATE_LOSING = 2;
+
+  const TICK = 80;
+  const SQUARE_SIZE = 10;
+  const BOARD_WIDTH = 50;
+  const BOARD_HEIGHT = 50;
+  const GROW_SCALE = 100;  
+  const DIRECTIONS_MAP = {
+    65:  [-1, 0], // A
+    68:  [ 1, 0], // D
+    83:  [ 0, 1], // S
+    87:  [ 0,-1], // W
+    97:  [-1, 0], // a
+    100: [ 1, 0], // d
+    115: [ 0, 1], // s
+    119: [ 0,-1], // w
+  };
+  
+  let state = {
+    canvas: null,
+    context: null,
+    snake: [[0, 0]],
+    direction: [1, 0],
+    prey: [10, 10],
+    growing: 0,
+    runState: STATE_RUNNING,
+  };
+
+  function tick() {
+    const head = state.snake[0];
+    const tail = [...state.snake[state.snake.length - 1]];
+    const [dx, dy] = state.direction;
+    const highestIndex = state.snake.length - 1;
+    let interval;
+    
+    let didScore = (
+      head[0] === state.prey[0]
+      && head[1] === state.prey[1]
+    );
+
+    if (state.runState === STATE_RUNNING) {
+      for (let idx = highestIndex; idx > -1; idx--) {
+        const sq = state.snake[idx];
+
+        if (idx === 0) {
+          sq[0] += dx;
+          sq[1] += dy;
+        } else {
+          sq[0] = state.snake[idx - 1][0];
+          sq[1] = state.snake[idx - 1][1];
+        }
+      }
+      interval = TICK;
+    } else if (state.runState === STATE_LOSING) {
+      interval = 10;
+
+      if (state.snake.length > 0) {
+        state.snake.splice(0, 1);
+      }
+
+      if (state.snake.length === 0) {
+        state.runState = STATE_RUNNING;
+        state.snake.push([BOARD_WIDTH / 2, BOARD_HEIGHT / 2]);
+        state.prey = [
+          parseInt(Math.random() * BOARD_WIDTH),
+          parseInt(Math.random() * BOARD_HEIGHT),
+        ];
+      }
+    }
+
+    if (detectCollision()) {
+      state.runState = STATE_LOSING;
+      state.growing = 0;
+    }
+
+    if (didScore) {
+      state.growing += GROW_SCALE;
+      state.prey = [
+        parseInt(Math.random() * BOARD_WIDTH),
+        parseInt(Math.random() * BOARD_HEIGHT),
+      ];
+    }
+
+    if (state.growing > 0) {
+      state.snake.push(tail);
+      state.growing -= 1;
+    }
+
+    requestAnimationFrame(draw);
+    setTimeout(tick, interval);
+  }
+
+  function detectCollision() {
+    if (state.snake[0][0] < 0
+      || state.snake[0][0] >= BOARD_WIDTH
+      || state.snake[0][1] >= BOARD_HEIGHT
+      || state.snake[0][1] < 0
+    ) {
+      return true;
+    }
+
+    for (var idx = 1; idx < state.snake.length; idx++) {
+      if (state.snake[idx][0] === state.snake[0][0]
+        && state.snake[idx][1] === state.snake[0][1]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function drawPixel(color, x, y) {
+    state.context.fillStyle = color;
+    state.context.fillRect(
+      x * SQUARE_SIZE, y * SQUARE_SIZE,
+      SQUARE_SIZE,
+      SQUARE_SIZE
+    );
+  }
+
+  function draw() {
+    state.context.clearRect(0, 0, 500, 500);
+
+    for (var idx = 0; idx < state.snake.length; idx++) {
+      const [x, y] = state.snake[idx];
+      drawPixel('#22dd22', x, y);
+    }
+
+    const [x, y] = state.prey;
+    drawPixel('yellow', x, y);
+  }
+
+  window.onload = function() {
+    state.canvas = document.querySelector('canvas');
+    state.context = state.canvas.getContext('2d');
+
+    window.onkeydown = function(e) {
+      const direction = DIRECTIONS_MAP[e.keyCode];
+      if (direction) {
+        const [dx, dy] = direction;
+        if (-dx !== state.direction[0]
+          && -dy !== state.direction[1])
+        {
+          state.direction = direction;
+        }
+      }
+    };
+
+    tick();
+  };
+
+</script>
+
+</body>
+</html>
