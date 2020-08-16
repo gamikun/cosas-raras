@@ -30,27 +30,34 @@
   const SQUARE_SIZE = 10;
   const BOARD_WIDTH = 50;
   const BOARD_HEIGHT = 50;
-  const GROW_SCALE = 10;  
+  const GROW_SCALE = 10;
   const DIRECTIONS_MAP = {
-    'A': [-1, 0],
-    'D': [ 1, 0],
-    'S': [ 0, 1],
-    'W': [ 0,-1],
-    'a': [-1, 0],
-    'd': [ 1, 0],
-    's': [ 0, 1],
-    'w': [ 0,-1],
+    'A': [-1,  0],
+    'D': [ 1,  0],
+    'S': [ 0,  1],
+    'W': [ 0, -1],
+    'a': [-1,  0],
+    'd': [ 1,  0],
+    's': [ 0,  1],
+    'w': [ 0, -1],
   };
-  
+
   let state = {
     canvas: null,
     context: null,
     snake: [{x: 0, y: 0}],
     direction: {x: 1, y: 0},
-    prey: {x: 10, y: 10},
+    prey: {x: 0, y: 0},
     growing: 0,
-    runState: STATE_RUNNING,
+    runState: STATE_RUNNING
   };
+
+  function randomXY() {
+    return {
+      x: parseInt(Math.random() * BOARD_WIDTH),
+      y: parseInt(Math.random() * BOARD_HEIGHT)
+    };
+  }
 
   function tick() {
     const head = state.snake[0];
@@ -58,10 +65,11 @@
     const dy = state.direction.y;
     const highestIndex = state.snake.length - 1;
     let tail = {};
-    let interval;
+    let interval = TICK;
 
-    Object.assign(tail, state.snake[state.snake.length - 1]);
-    
+    Object.assign(tail,
+      state.snake[state.snake.length - 1]);
+
     let didScore = (
       head.x === state.prey.x
       && head.y === state.prey.y
@@ -79,7 +87,6 @@
           sq.y = state.snake[idx - 1].y;
         }
       }
-      interval = TICK;
     } else if (state.runState === STATE_LOSING) {
       interval = 10;
 
@@ -89,14 +96,8 @@
 
       if (state.snake.length === 0) {
         state.runState = STATE_RUNNING;
-        state.snake.push({
-          x: BOARD_WIDTH / 2,
-          y: BOARD_HEIGHT / 2
-        });
-        state.prey = {
-          x: parseInt(Math.random() * BOARD_WIDTH),
-          y: parseInt(Math.random() * BOARD_HEIGHT),
-        };
+        state.snake.push(randomXY());
+        state.prey = randomXY();
       }
     }
 
@@ -107,10 +108,7 @@
 
     if (didScore) {
       state.growing += GROW_SCALE;
-      state.prey = {
-        x: parseInt(Math.random() * BOARD_WIDTH),
-        y: parseInt(Math.random() * BOARD_HEIGHT),
-      };
+      state.prey = randomXY();
     }
 
     if (state.growing > 0) {
@@ -123,17 +121,20 @@
   }
 
   function detectCollision() {
-    if (state.snake[0].x < 0
-      || state.snake[0].x >= BOARD_WIDTH
-      || state.snake[0].y >= BOARD_HEIGHT
-      || state.snake[0].y < 0
+    const head = state.snake[0];
+
+    if (head.x < 0
+      || head.x >= BOARD_WIDTH
+      || head.y >= BOARD_HEIGHT
+      || head.y < 0
     ) {
       return true;
     }
 
     for (var idx = 1; idx < state.snake.length; idx++) {
-      if (state.snake[idx].x === state.snake[0].x
-        && state.snake[idx].y === state.snake[0].y) {
+      const sq = state.snake[idx];
+
+      if (sq.x === head.x && sq.y === head.y) {
         return true;
       }
     }
@@ -144,7 +145,8 @@
   function drawPixel(color, x, y) {
     state.context.fillStyle = color;
     state.context.fillRect(
-      x * SQUARE_SIZE, y * SQUARE_SIZE,
+      x * SQUARE_SIZE,
+      y * SQUARE_SIZE,
       SQUARE_SIZE,
       SQUARE_SIZE
     );
@@ -178,11 +180,10 @@
           state.direction.y = y;
         }
       }
-    };
+    }
 
     tick();
   };
-
 </script>
 
 </body>
