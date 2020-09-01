@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <title>Rounded Corners</title>
+  <style>
+    body { background: #555; }
+  </style>
+<body>
+  <canvas width="400" height="400"></canvas>
+  <div>
+    <input type="range" max="1.0" min="0.0" step="any">
+  </div>
+  <script>
+    const proto = CanvasRenderingContext2D.prototype;
+    
+    const canvas = document.querySelector('canvas');
+    const context = canvas.getContext('2d');
+    const slider = document.querySelector('input[type=range');
+    const gradient = context.createLinearGradient(0, 0, 500, 500);
+    
+    gradient.addColorStop(0, 'green');
+    gradient.addColorStop(1, 'blue');
+    
+    let radiusRatio = 0.2; // 0.0 - 1.0
+
+    slider.value = radiusRatio;
+    slider.addEventListener('input', function() {
+      radiusRatio = this.value;
+      draw();
+    });
+
+    proto.roundedRect = function(x, y, w, h, r) {
+      const x2 = x + w;
+      const y2 = y + h;
+
+      context.moveTo(x + r, y);
+      context.lineTo(x2 - r, y);
+      context.quadraticCurveTo(x2, y, x2, y + r);
+      context.lineTo(x2, y2 - r);
+      context.quadraticCurveTo(x2, y2, x2 - r, y2);
+      context.lineTo(x + r, y2);
+      context.quadraticCurveTo(x, y2, x, y2 - r);
+      context.lineTo(x, y + r);
+      context.quadraticCurveTo(x, y, x + r, y);
+    };
+
+    function draw() {
+      context.clearRect(0, 0, 500, 500);
+      context.fillStyle = gradient;
+      context.strokeStyle = 'white';
+      context.lineWidth = 5;
+
+      context.beginPath();
+      context.roundedRect(50, 50, 300, 300, (300 / 2) * radiusRatio);
+      context.closePath();
+      context.fill();
+      context.stroke();
+    }
+
+    draw();
+  </script>
+</body>
+</html>
