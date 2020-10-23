@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+  <title>Lineas</title>
+  <style>
+    * { font-family: Verdana; }
+    .panel {
+      position: fixed;
+      background: #f0f0f0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      padding: 32px;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas" width="700" height="400"></canvas>
+<script>
+
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+var state = {
+  dots: [],
+  radius: 200,
+  dotsCounter: 20,
+  dotRadius: 10,
+  lineWidth: 1
+};
+
+function createCircumference(radius, cx, cy, segments) {
+  var vertices = [];
+  var segment = Math.PI / segments * 2;
+
+  for (var index = 0; index < segments; index++) {
+    vertices.push({
+      x: radius * Math.cos(index * segment) + cx,
+      y: radius * Math.sin(index * segment) + cy,
+    });
+  }
+
+  return vertices;
+}
+
+function draw() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  state.dots.forEach(function(dot, index) {
+    let subdot;
+
+    if (state.dotRadius > 0) {
+      context.beginPath();
+      context.arc(dot.x, dot.y, state.dotRadius, 0, Math.PI * 2, 0);
+      context.fill();  
+    }
+
+    context.lineWidth = state.lineWidth;
+    context.beginPath();
+    for (var subindex = 0; subindex < state.dots.length; subindex++) {
+      if (subindex > index) {
+        subdot = state.dots[subindex];
+        context.moveTo(dot.x, dot.y);
+        context.lineTo(subdot.x, subdot.y);
+      }
+    }
+    context.stroke();
+  });
+}
+
+function update(update) {
+  if (update) {
+    Object.assign(state, update);
+  }
+  state.dots = createCircumference(
+    state.radius,
+    canvas.width / 2,
+    canvas.height / 2,
+    state.dotsCounter
+  );
+  draw();
+}
+
+window.onresize = function() {
+  canvas.width = window.innerWidth - 200;
+  canvas.height = window.innerHeight;
+  update();
+}
+
+window.onload = function() {
+  window.onresize();
+  update();
+}
+
+</script>
+
+<div class="panel">
+  <div>
+    <div>Radius</div>
+    <input type="range" min="30" max="800"
+      oninput="update({radius: parseInt(this.value)})">
+  </div>
+
+  <div>
+    <div>Puntos</div>
+    <input type="range" min="3" max="30"
+      oninput="update({dotsCounter: parseInt(this.value)})">
+  </div>
+
+  <div>
+    <div>Radio de puntos</div>
+    <input type="range" min="0" max="30"
+      oninput="update({dotRadius: parseFloat(this.value)})">
+  </div>
+
+  <div>
+    <div>Ancho de línea</div>
+    <input type="range" min="1" max="10"
+      oninput="update({lineWidth: parseInt(this.value)})">
+  </div>
+</div>
+
+</body>
+</html>

@@ -71,8 +71,9 @@
 				octx.fillStyle = 'black';
 				octx.strokeStyle = 'green';
 				octx.lineWidth = 2;
-				//octx.clearRect(0, 0, 1000, 1000);
-				//octx.fill();
+				octx.clearRect(0, 0, 1000, 1000);
+
+				octx.beginPath();
 				octx.lineTo(event.clientX, event.clientY);
 				octx.stroke();
 			}

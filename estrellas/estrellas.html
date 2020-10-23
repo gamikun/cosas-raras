@@ -6,7 +6,7 @@
 <body>
 	<canvas id="lienzo" width="300" height="300"></canvas>
 	<script type="text/javascript">
-		var n_estrellas = 5000;
+		var n_estrellas = 500;
 		var cv, cx, estrellas = [];
 		var vel_max = 10;
 
@@ -33,7 +33,7 @@
 			cx.fillStyle = '#fff';
 			for(var i = 0; i < n_estrellas; i++) {
 				var e = estrellas[i];
-				cx.fillStyle = e.color;
+				cx.fillStyle = 'white'//e.color;
 				if(e.x > 300 || e.y > 300 || e.x < 0 || e.y < 0) {
 					prepararEstrella(i);
 				}

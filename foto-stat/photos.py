@@ -56,6 +56,8 @@ elif args.entity == 'photo':
             printed_cm = 15.24
             printed_unit = 'cm'
             size_printed = 0
+            lens_models = {}
+            total_exposure = 0
 
             cursor = db.cursor()
             cursor.execute("""
@@ -89,8 +91,21 @@ elif args.entity == 'photo':
                     w = exif['PixelXDimension']
                     h = exif['PixelYDimension']
                     total_pixels += w * h
-                
-                # print(exif)
+
+                if 'LensModel' in exif:
+                    if exif['LensModel'] not in lens_models:
+                        lens_models[exif['LensModel']] = 1
+                    else:
+                        lens_models[exif['LensModel']] += 1
+
+                if 'ExposureTime' in exif:
+                    num, den = exif['ExposureTime']
+                    if den != 0:
+                        total_exposure += 1 / num / den
+
+
+                print(exif)
+                raw_input()
 
             if counter > 0:
                 avg = allsum / counter
@@ -120,13 +135,18 @@ elif args.entity == 'photo':
                 size_printed = total_printed
 
             print("total: {}".format(counter))
+            print("exposure: {} seconds".format(total_exposure))
             print("average: f/{:.01f}".format(avg))
             print("total pixels: {:.02f} {}".format(total_mpx, pixel_unit))
             print("your photo printed in 6-inch: {:.01f} {}".format(size_printed, printed_unit))
 
+            print('\nCAMERA LENSES\n--------------')
+            for lens in lens_models:
+                print("{:>5} {}".format(lens_models[lens], lens))
+
         except ImportError:
             print("bplist module is not installed", file=sys.stderr)
-            print("to install use:", file=sys.stder)
+            print("to install use:", file=sys.stderr)
             sys.exit(1)
 
 
