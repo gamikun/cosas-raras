@@ -87,10 +87,7 @@ window.onresize = function() {
   update();
 }
 
-window.onload = function() {
-  window.onresize();
-  update();
-}
+window.onload = window.onresize;
 
 </script>
 
