@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PNG</title>
+  <style type="text/css">
+    body {
+      background: linear-gradient(steelblue, #009900) fixed;
+    }
+  </style>
+</head>
+<body>
+  <canvas width="500" height="500" id="source"></canvas>
+  <canvas width="500" height="500" id="target"></canvas>
+  <script>
+    const state = {color: [0, 0, 0]};
+    let source = document.getElementById('source');
+    let target = document.getElementById('target');
+
+    let contextSource = source.getContext('2d');
+    let contextTarget = target.getContext('2d');
+
+    let image = new Image();
+
+    image.onload = function() {
+      contextSource.drawImage(image, 0, 0);
+
+      const data = contextSource.getImageData(0, 0, source.width, source.height);
+      const pixelCount = source.width * source.height;
+
+      for (let index = 0; index < pixelCount; index++) {
+        const [r, g, b] = state.color;
+        if (data.data[index * 4 + 3] > 0) {
+          data.data[index * 4] = r;
+          data.data[index * 4 + 1] = g;
+          data.data[index * 4 + 2] = b;
+        }
+      }
+
+      contextTarget.putImageData(data, 0, 0);
+    };
+
+    image.src = 'tint.png';
+  </script>
+</body>
+</html>
