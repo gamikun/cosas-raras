@@ -55,8 +55,8 @@
           dot.x = dot.r * Math.cos(dot.rotation) + state.cx;
           dot.y = dot.r * Math.sin(dot.rotation) + state.cy;
         }
-        //requestAnimationFrame(draw);
-        draw();
+        requestAnimationFrame(draw);
+        // draw();
         setTimeout(tick, 160);
       }
 
