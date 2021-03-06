@@ -1,0 +1,95 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Espirales</title>
+    <style type="text/css">
+      body {
+        background-color: #222;
+      }
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="500" height="500" id="canvas"></canvas>
+    <script>
+      const state = {dots: [], cx: 0, cy: 0};
+      const cnv = document.getElementById('canvas');
+      const ctx = cnv.getContext('2d');
+
+      function Dot() {
+        this.r = Math.random() * cnv.width * 2;
+        this.x = 0;
+        this.y = 0;
+        this.speed = 1;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = Math.random() * 0.04;
+
+        const rnd = Math.random() * 255;
+        this.color = "rgb("
+          + rnd + ","
+          + rnd + ","
+          + rnd
+          + ")";
+
+        /*this.color = "rgb("
+          + (Math.random() * 255) + ","
+          + (Math.random() * 255) + ","
+          + (Math.random() * 255)
+          + ")";*/
+      }
+
+      function tick() {
+        for (let idx = 0; idx < state.dots.length; idx++) {
+          const dot = state.dots[idx];
+          dot.r -= dot.speed;
+          dot.rotation += dot.rotationSpeed;
+
+          if (dot.r < 0) {
+            dot.r = Math.random() * (cnv.width / 2) + (cnv.width / 2);
+          }
+
+          dot.x = dot.r * Math.cos(dot.rotation) + state.cx;
+          dot.y = dot.r * Math.sin(dot.rotation) + state.cy;
+        }
+        //requestAnimationFrame(draw);
+        draw();
+        setTimeout(tick, 160);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, cnv.width, cnv.height);
+        //cnv.width = cnv.width;
+ 
+        for (let idx = 0; idx < state.dots.length; idx++) {
+          const dot = state.dots[idx];
+
+          ctx.fillStyle = dot.color;
+          
+          ctx.beginPath();
+          ctx.arc(dot.x, dot.y, dot.r * 0.03 + 1, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+
+      for (let idx = 0; idx < 5000; idx++) {
+        state.dots.push(new Dot());
+      }
+
+      window.onresize = function() {
+        cnv.width = window.innerWidth;
+        cnv.height = window.innerHeight;
+        state.cx = window.innerWidth / 2;
+        state.cy = window.innerHeight / 2;
+      };
+
+      window.onresize();
+
+      setTimeout(tick, 0);
+    </script>
+  </body>
+</html>
