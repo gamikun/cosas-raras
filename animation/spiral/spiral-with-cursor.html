@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spiral</title>
+    <style type="text/css">
+      body {
+        background-color: #222;
+      }
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="500" height="500" id="canvas"></canvas>
+    <script>
+      const state = {dots: [], cx: 0, cy: 0};
+      const cnv = document.getElementById('canvas');
+      const ctx = cnv.getContext('2d');
+
+      function Dot() {
+        this.r = Math.random() * cnv.width * 2;
+        this.x = 0;
+        this.y = 0;
+        this.speed = 1;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = Math.random() * 0.04;
+        this.color = "rgb("
+          + parseInt(Math.random() * 255) + ","
+          + parseInt(Math.random() * 255) + ","
+          + parseInt(Math.random() * 255)
+          + ")";
+      }
+
+      function tick() {
+        for (let index = 0; index < state.dots.length; index++) {
+          const dot = state.dots[index];
+          dot.r -= dot.speed;
+          dot.rotation += dot.rotationSpeed;
+
+          if (dot.r < 0) {
+            dot.r = (Math.random() * (cnv.width / 2)) + (cnv.width / 2);
+          }
+
+          dot.x = dot.r * Math.cos(dot.rotation) + state.cx;
+          dot.y = dot.r * Math.sin(dot.rotation) + state.cy;
+        }
+
+        requestAnimationFrame(draw);
+
+        setTimeout(tick, 25);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, cnv.width, cnv.height);
+
+        for (let index = 0; index < state.dots.length; index++) {
+          const dot = state.dots[index];
+
+          ctx.fillStyle = dot.color;
+
+          ctx.beginPath();
+          ctx.arc(dot.x, dot.y, dot.r * 0.03 + 1, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+
+      for (let index = 0; index < 5000; index++) {
+        state.dots.push(new Dot());
+      }
+
+      window.onmousemove = function(e) {
+        state.cx = e.clientX;
+        state.cy = e.clientY;
+      };
+
+      window.onresize = function() {
+        cnv.width = window.innerWidth;
+        cnv.height = window.innerHeight;
+        state.cx = window.innerWidth / 2;
+        state.cy = window.innerHeight / 2;
+      }
+
+      window.onresize();
+
+      setTimeout(tick, 0);
+    </script>
+  </body>
+</html>
