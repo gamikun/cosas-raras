@@ -3,55 +3,53 @@
   <head>
     <title>Bounce</title>
     <style>
-      body { background-color: #333; margin: 32px; }
-      #canvas { border: solid 10px white; text-align: center }
-      .container { width: 100%; }
+      body { background: #333; margin: 32px; }
+      #canvas { border: solid 10px white; background: linear-gradient(green, purple); }
     </style>
   </head>
   <body>
     <div class="container">
-      <canvas width="500" height="500" id="canvas"></canvas>
+      <canvas width="500" height="400" id="canvas"></canvas>
     </div>
     <script>
       const RADIUS = 20;
-      const SPEED = 20;
+      const SPEED = 25;
       const WIDTH = 500;
+      const HEIGHT = 400;
 
       const cnv = document.getElementById('canvas');
       const ctx = cnv.getContext('2d');
 
-      const coord = { x: WIDTH / 2, y: WIDTH / 2 };
+      const coord = { x: WIDTH / 2, y: HEIGHT / 2 };
       const delta = {
         x: Math.random() * SPEED * 2 - SPEED,
-        y: Math.random() * SPEED * 2 - SPEED
+        y: Math.random() * SPEED * 2 - SPEED,
       };
 
       function tick() {
         const newx = coord.x + delta.x;
         const newy = coord.y + delta.y;
+        const deviation = (0.15 * Math.random()) - 0.3;
 
         if (newx > WIDTH - RADIUS || newx < 0)
           delta.x = -delta.x;
 
-        if (newy > WIDTH - RADIUS || newy < 0)
+        if (newy > HEIGHT - RADIUS || newy < 0)
           delta.y = -delta.y;
 
         coord.x = newx;
         coord.y = newy;
 
-        // requestAnimationFrame(draw);
-        draw();
+        requestAnimationFrame(draw);
         setTimeout(tick, 10);
       }
 
       function draw() {
         ctx.fillStyle = 'white';
-        ctx.clearRect(0, 0, WIDTH, WIDTH);
-        /*ctx.clearRect(0, 0, WIDTH, WIDTH);
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
         ctx.beginPath();
         ctx.arc(coord.x, coord.y, RADIUS, 0, Math.PI * 2, 1);
-        ctx.fill();*/
-        ctx.fillRect(coord.x, coord.y, RADIUS * 2, RADIUS * 2);
+        ctx.fill();
       }
 
       tick();
