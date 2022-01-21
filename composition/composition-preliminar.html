@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Composition</title>
+</head>
+<body>
+  <div>
+    <input type="range" id="slider" min="0" max="1" step="0.005" />
+  </div>
+<script>
+  const state = {
+    image1: null,
+    image2: null,
+    data1: null,
+    data2: null,
+    ratio: 0.5,
+    resultData: null,
+    ctx: null,
+  };
+
+  function run() {
+    const cnv = document.createElement('canvas');
+    cnv.width = 799;
+    cnv.height = 533;
+
+    document.body.prepend(cnv);
+
+    state.ctx = cnv.getContext('2d');
+
+    state.ctx.drawImage(state.image1, 0, 0, 799, 533);
+    state.data1 = state.ctx.getImageData(0, 0, 799, 533);
+    state.ctx.drawImage(state.image2, 0, 0, 799, 533);
+    state.data2 = state.ctx.getImageData(0, 0, 799, 533);
+
+    state.result = state.ctx.createImageData(799, 533);
+
+    composite();
+  }
+
+  function composite() {
+    const { ctx, data1, data2, ratio, result } = state;
+    const pixelCount = 799 * 533;
+
+    for (let index = 0; index < pixelCount; index++) {
+      const resR = data1.data[index * 4 + 0] - data2.data[index * 4 + 0];
+      const resG = data1.data[index * 4 + 1] - data2.data[index * 4 + 1];
+      const resB = data1.data[index * 4 + 2] - data2.data[index * 4 + 2];
+
+      result.data[index * 4 + 0] = parseInt(state.data1.data[index * 4 + 0] - ratio * resR);
+      result.data[index * 4 + 1] = parseInt(state.data1.data[index * 4 + 1] - ratio * resG);
+      result.data[index * 4 + 2] = parseInt(state.data1.data[index * 4 + 2] - ratio * resB);
+      result.data[index * 4 + 3] = 255;
+    }
+
+    ctx.putImageData(result, 0, 0);
+  }
+
+
+  const img1 = new Image();
+  img1.onload = function() {
+    state.image1 = img1;
+    const img2 = new Image();
+    img2.onload = function() {
+      state.image2 = img2;
+      run();
+    };
+    img2.src = '2.jpg';
+  };
+  img1.src = '1.jpg';
+
+  document.getElementById('slider').addEventListener('input', function(e) {
+    state.ratio = e.target.value;
+    console.log(state.ratio);
+    composite();
+  });
+  
+</script>
+
+</body>
+</html>
