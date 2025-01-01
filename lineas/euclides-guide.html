@@ -3,15 +3,20 @@
 <head>
   <title>Lineas</title>
   <style>
+    body {
+      margin: 0;
+      background: linear-gradient(#531B93,black);
+    }
     * { font-family: Verdana; }
     .panel {
       position: fixed;
-      background: #f0f0f0;
+      background: #ffffff44;
       top: 0;
       right: 0;
       bottom: 0;
       padding: 32px;
-      width: 200px;
+      width: 300px;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -50,11 +55,13 @@ function draw() {
     let subdot;
 
     if (state.dotRadius > 0) {
+      context.fillStyle = 'white';
       context.beginPath();
       context.arc(dot.x, dot.y, state.dotRadius, 0, Math.PI * 2, 0);
       context.fill();  
     }
 
+    context.strokeStyle = 'white';
     context.lineWidth = state.lineWidth;
     context.beginPath();
     for (var subindex = 0; subindex < state.dots.length; subindex++) {
@@ -82,7 +89,7 @@ function update(update) {
 }
 
 window.onresize = function() {
-  canvas.width = window.innerWidth - 200;
+  canvas.width = window.innerWidth - 300;
   canvas.height = window.innerHeight;
   update();
 }

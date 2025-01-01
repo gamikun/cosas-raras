@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+	<canvas id="canvas" width="500" height="500"></canvas>
+	<script>
+		var cnv = document.getElementById('canvas');
+		var ctx = cnv.getContext('2d');
+		var INNER_RADIUS = 50;
+		var OUTER_RADIUS = 80;
+
+		ctx.beginPath();
+		ctx.fillStyle = '#009944';
+		ctx.arc(100, 100, OUTER_RADIUS, Math.PI * 2 * 0.125, Math.PI * 2 * 0.40, 0);
+		ctx.arc(100, 100, INNER_RADIUS, Math.PI * 2 * 0.40, Math.PI * 2 * 0.125, 1);
+		
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.fillStyle = '#ffbb00';
+		ctx.arc(100, 100, OUTER_RADIUS, Math.PI * 2 * 0.40, Math.PI * 2 * 0.65, 0);
+		ctx.arc(100, 100, INNER_RADIUS, Math.PI * 2 * 0.65, Math.PI * 2 * 0.40, 1);
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.fillStyle = '#ff3300';
+		ctx.arc(100, 100, OUTER_RADIUS, Math.PI * 2 * 0.65, Math.PI * 2 * 0.85, 0);
+		ctx.arc(100, 100, INNER_RADIUS, Math.PI * 2 * 0.85, Math.PI * 2 * 0.65, 1);
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.fillStyle = '#0088ff';
+		ctx.arc(100, 100, OUTER_RADIUS, 0, Math.PI * 2 * 0.125, 0);
+		ctx.arc(100, 100, INNER_RADIUS, Math.PI * 2 * 0.125, Math.PI * 2 * 0.08, 1);
+		ctx.lineTo(100, 124);
+		ctx.lineTo(100, 100);
+		ctx.fill();
+	</script>
+</body>
+</html>

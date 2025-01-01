@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+	<style>
+		body {
+			background: black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="1259" height="500" style="background: black">
+		
+	</canvas>
+	<script>
+		var scale = 25;
+		var cnv = document.getElementById('canvas');
+		var ctx = cnv.getContext('2d');
+		var radius = 50;
+		var alt = 0;
+		var diameter = radius * 2;
+
+		ctx.strokeStyle = 'white';
+		ctx.lineWidth = 8;
+
+		ctx.beginPath();
+
+		for (var index = 0; index < 15; index++) {
+			ctx.arc(diameter * index, 100, 50, Math.PI, 0, alt);
+			alt = !alt;
+		}
+		
+		ctx.stroke();
+	</script>
+</body>
+</html>

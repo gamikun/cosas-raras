@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+	<style>
+		body {
+			background: black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="500" height="500" style="background: black">
+		
+	</canvas>
+	<script>
+		var scale = 25;
+		var cnv = document.getElementById('canvas');
+		var ctx = cnv.getContext('2d');
+
+		function pixel(x, y, color) {
+			ctx.fillStyle = color;
+			ctx.fillRect(x * scale, y * scale, scale, scale);
+		}
+
+		pixel(0, 0, 'rgb(255,   0, 255)');
+		pixel(0, 1, 'rgb(255,   0, 255)');
+		pixel(0, 2, 'rgb(255, 255, 255)');
+		pixel(0, 3, 'rgb(255,   0, 255)');
+
+		pixel(1, 0, 'rgb(0, 0, 255)');
+		pixel(1, 1, 'rgb(0, 0, 255)');
+		pixel(1, 2, 'rgb(0, 0, 255)');
+		pixel(1, 3, 'rgb(0, 0, 255)');
+
+		pixel(2, 0, 'rgb(255, 255, 0)');
+		pixel(2, 1, 'rgb(  0, 255, 0)');
+		pixel(2, 2, 'rgb(  0, 255, 0)');
+		pixel(2, 3, 'rgb(255, 255, 0)');
+
+		pixel(3, 0, 'rgb(0, 255, 0)');
+		pixel(3, 1, 'rgb(0, 255, 0)');
+		pixel(3, 2, 'rgb(0, 255, 0)');
+		pixel(3, 3, 'rgb(0, 255, 255)');
+
+		pixel(4, 0, 'rgb(0,   0, 0)');
+		pixel(4, 1, 'rgb(0,   0, 0)');
+		pixel(4, 2, 'rgb(0,   0, 0)');
+		pixel(4, 3, 'rgb(255, 0, 0)');
+
+		pixel(5, 0, 'rgb(255, 255, 255)');
+		pixel(5, 1, 'rgb(255,   0, 255)');
+		pixel(5, 2, 'rgb(255, 255, 255)');
+		pixel(5, 3, 'rgb(255,   0, 255)');
+	</script>
+</body>
+</html>

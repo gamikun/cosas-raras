@@ -50,13 +50,11 @@
           dot.y = dot.r * Math.sin(dot.rotation) + state.cy;
         }
         requestAnimationFrame(draw);
-        // draw();
         setTimeout(tick, 25);
       }
 
       function draw() {
         ctx.clearRect(0, 0, cnv.width, cnv.height);
-        //cnv.width = cnv.width;
  
         for (let idx = 0; idx < state.dots.length; idx++) {
           const dot = state.dots[idx];
@@ -65,7 +63,6 @@
           
           ctx.beginPath();
           ctx.arc(dot.x, dot.y, dot.r * 0.03 + 1, 0, Math.PI * 2);
-          ctx.closePath();
           ctx.fill();
         }
       }
